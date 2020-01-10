@@ -215,7 +215,7 @@ void ZMODDAC1411::setGain(uint8_t channel, uint8_t gain)
 #define IDEAL_RANGE_DAC_HIGH 5.0
 #define IDEAL_RANGE_DAC_LOW 1.25
 #define REAL_RANGE_DAC_HIGH 5.32
-#define REAL_RANGE_DAC_LOW 1.25
+#define REAL_RANGE_DAC_LOW 1.33
 
 /*
  * Computes the Multiplicative calibration coefficient.
