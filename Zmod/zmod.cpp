@@ -493,7 +493,7 @@ void fnZmodInterruptHandler(void *data) {
  * @param val -  the value to be formatted
  * @param unit - the string containing the measure unit. If NULL, no measure unit is added.
  */
-void ZMOD::formatValue(char *dest, float val, char *unit)
+void ZMOD::formatValue(char *dest, float val, const char *unit)
 {
 	if (val < 0)
 	{

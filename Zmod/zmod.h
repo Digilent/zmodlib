@@ -89,7 +89,7 @@ public:
 	void writeUserCalib();
 	int restoreFactoryCalib();
 
-	void formatValue(char *dest, float val, char *unit);
+	void formatValue(char *dest, float val, const char *unit);
 
 protected:
 	int32_t toSigned(uint32_t value, uint8_t noBits);
