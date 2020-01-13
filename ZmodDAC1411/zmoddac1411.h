@@ -73,7 +73,7 @@ private:
 protected:
 
 public:
-	ZMODDAC1411(uintptr_t baseAddress, uintptr_t dmaAddress, uintptr_t iicAddress, uintptr_t flashAddress, int dmaInterrupt);
+	ZMODDAC1411(uintptr_t baseAddress, uintptr_t dmaAddress, uintptr_t iicAddress, uintptr_t flashAddress, int zmodInterrupt, int dmaInterrupt);
 
 	uint32_t* allocChannelsBuffer(size_t length);
 	uint32_t arrangeChannelData(uint8_t channel, uint16_t data);
