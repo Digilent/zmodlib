@@ -501,18 +501,22 @@ void ZMOD::formatValue(char *dest, float val, const char *unit)
 		dest[0] = '-';
 		dest ++;
 	}
+	// round the 3'th decimal digit (the rest of the digits are decimated)
+	val += 0.0005;
 	int poz = (int) val;
 	float f = val - (float)poz;
 	if(f != 0.0)
 	{
-		// round the 3'th decimal digit (the rest of the digits are decimated)
-		f += 0.0005;
 		sprintf(dest, "%d.%03d", poz, (int)(f*1000.0));
 		// trim ending 0's
 		int i = strlen(dest) - 1;
 		while(dest[i] == '0')
 		{
 			dest[i--] = 0;
+		}
+		if(dest[i] == '.')
+		{
+			dest[i] = 0;
 		}
 	}
 	else
