@@ -32,19 +32,21 @@ extern bool fIntCInit;
 uint32_t fnInitZmod(uintptr_t addr, int zmodInterrupt,
 		void *fnZmodInterruptHandler, void *zmodInterruptData)
 {
-	ivt_t ivt[] = {
-		{ zmodInterrupt, (XInterruptHandler)fnZmodInterruptHandler, zmodInterruptData },
-	};
+	if(zmodInterrupt > 0)
+	{
+		ivt_t ivt[] = {
+			{ zmodInterrupt, (XInterruptHandler)fnZmodInterruptHandler, zmodInterruptData },
+		};
 
-	// Init interrupt controller
-	if (!fIntCInit) {
-		fnInitInterruptController(&sIntc);
-		fIntCInit = true;
+		// Init interrupt controller
+		if (!fIntCInit) {
+			fnInitInterruptController(&sIntc);
+			fIntCInit = true;
+		}
+
+		// Enable all interrupts in the interrupt vector table
+		fnEnableInterrupts(&sIntc, &ivt[0], sizeof(ivt)/sizeof(ivt[0]));
 	}
-
-	// Enable all interrupts in the interrupt vector table
-	fnEnableInterrupts(&sIntc, &ivt[0], sizeof(ivt)/sizeof(ivt[0]));
-
 	return addr;
 }
 
