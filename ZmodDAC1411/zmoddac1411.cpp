@@ -39,8 +39,8 @@
  *  can be found by looking at the xparameters.h file on a baremental
  *  platform, and is irrelevant on a Linux platform.
  */
-ZMODDAC1411::ZMODDAC1411(uintptr_t baseAddress, uintptr_t dmaAddress, uintptr_t iicAddress, uintptr_t flashAddress, int zmodInterrupt, int dmaInterrupt)
-		: ZMOD(baseAddress, dmaAddress, iicAddress, flashAddress, DMA_DIRECTION_TX, zmodInterrupt, dmaInterrupt)
+ZMODDAC1411::ZMODDAC1411(uintptr_t baseAddress, uintptr_t dmaAddress, uintptr_t iicAddress, uintptr_t flashAddress, int dmaInterrupt)
+		: ZMOD(baseAddress, dmaAddress, iicAddress, flashAddress, DMA_DIRECTION_TX, -1, dmaInterrupt)
 {
 	ZMOD::initCalib(sizeof(CALIBECLYPSEDAC), ZMODDAC1411_CALIB_ID, ZMODDAC1411_CALIB_USER_ADDR, ZMODDAC1411_CALIB_FACT_ADDR);
 }
