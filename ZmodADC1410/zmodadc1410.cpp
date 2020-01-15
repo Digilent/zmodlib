@@ -507,6 +507,9 @@ uint8_t ZMODADC1410::autoTestRamp(uint8_t channel, uint32_t level, uint32_t edge
 
 	sendCommands(sentCommands1, sentCommandsLength1);
 
+	// free buffer
+	freeChannelsBuffer(buf, length);
+
 	// wait for hardware reconfiguration
 	usleep(1000);
 
