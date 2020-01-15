@@ -258,6 +258,7 @@ int32_t ZMODDAC1411::computeCoefAdd(float ca, float cg, uint8_t gain)
 
 /*
  * Converts a value in Volts measure unit into a signed raw value (to be provided to the ZmodDAC1411 IP core).
+ * If the value is outside the range corresponding to the specified gain, it is limited to the nearest range limit.
  * @param raw - the signed value as .
  * @param gain 0 LOW and 1 HIGH
  * @return the Volts value.
