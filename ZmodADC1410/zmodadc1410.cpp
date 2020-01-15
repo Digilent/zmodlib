@@ -59,6 +59,17 @@ uint32_t* ZMODADC1410::allocChannelsBuffer(size_t length) {
 	return (uint32_t *)ZMOD::allocDMABuffer(length * sizeof(uint32_t));
 }
 
+/*
+* Free the data buffer used for AXI DMA transfers, 4 bytes for each sample.
+*
+ * @param buf the address of the DMA buffer
+* @param length the number of samples in the buffer.
+*
+*
+*/
+void ZMODADC1410::freeChannelsBuffer(uint32_t *buf, size_t length) {
+	ZMOD::freeDMABuffer(buf, length * sizeof(uint32_t));
+}
 /**
  * Set the trigger parameters of the data acquisition.
  *

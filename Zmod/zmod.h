@@ -57,7 +57,10 @@ protected:
 	uint8_t calibID;
 	enum dma_direction direction;
 	int initCalib(uint32_t calibSize, uint8_t calibID, uint32_t userCalibAddr,uint32_t factCalibAddr);
+	void* allocDMABuffer(size_t size);
+	void freeDMABuffer(uint32_t *buf, size_t size);
 	uint8_t computeCRC(uint8_t *pData, uint32_t len);
+
 public:
 	ZMOD(uintptr_t baseAddress, uintptr_t dmaAddress, uintptr_t iicAddress, uintptr_t flashAddress,
 			enum dma_direction direction, int zmodInterrupt, int dmaInterrupt);
@@ -71,8 +74,6 @@ public:
 	void writeSignedRegFld(uint8_t regAddr, uint8_t lsbBit, uint8_t noBits, int32_t value);
 	int32_t readSignedRegFld(uint8_t regAddr, uint8_t lsbBit, uint8_t noBits);
 
-	void* allocDMABuffer(size_t size);
-	void freeDMABuffer(uint32_t *buf, size_t size);
 	void setTransferSize(size_t size);
 	int startDMATransfer(uint32_t* buffer);
 	bool isDMATransferComplete();

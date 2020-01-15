@@ -76,6 +76,7 @@ public:
 	ZMODDAC1411(uintptr_t baseAddress, uintptr_t dmaAddress, uintptr_t iicAddress, uintptr_t flashAddress, int dmaInterrupt);
 
 	uint32_t* allocChannelsBuffer(size_t length);
+	void freeChannelsBuffer(uint32_t *buf, size_t length);
 	uint32_t arrangeChannelData(uint8_t channel, uint16_t data);
 	uint32_t arrangeSignedChannelData(uint8_t channel, int16_t data);
 

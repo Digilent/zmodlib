@@ -215,7 +215,7 @@ void ZMOD::processInterrupt(){
 /**
  * Allocate a DMA buffer.
  *
- * @param size the size of the DMA buffer
+ * @param size the size of the DMA buffer, in bytes
  *
  * @return the address of the DMA buffer
  */

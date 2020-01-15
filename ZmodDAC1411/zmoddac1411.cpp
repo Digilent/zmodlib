@@ -59,6 +59,17 @@ uint32_t* ZMODDAC1411::allocChannelsBuffer(size_t length) {
 }
 
 /*
+* Free the data buffer used for AXI DMA transfers, 4 bytes for each sample.
+*
+ * @param buf the address of the DMA buffer
+* @param length the number of samples in the buffer.
+*
+*
+*/
+void ZMODDAC1411::freeChannelsBuffer(uint32_t *buf, size_t length) {
+	ZMOD::freeDMABuffer(buf, length * sizeof(uint32_t));
+}
+/*
  * Position the channel data in a 32 bits value to be sent to IP.
  *
  * @param channel the channel to extract  0 for channel A, 1 for channel B

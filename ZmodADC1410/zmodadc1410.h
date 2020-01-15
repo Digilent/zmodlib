@@ -91,6 +91,7 @@ protected:
 public:
 	ZMODADC1410(uintptr_t baseAddress, uintptr_t dmaAddress, uintptr_t iicAddress, uintptr_t flashAddress, int zmodInterrupt, int dmaInterrupt);
 	uint32_t* allocChannelsBuffer(size_t length);
+	void freeChannelsBuffer(uint32_t *buf, size_t length);
 	uint16_t channelData(uint8_t channel, uint32_t data);
 	int16_t signedChannelData(uint8_t channel, uint32_t data);
 
