@@ -487,7 +487,7 @@ void fnZmodInterruptHandler(void *data) {
 }
 
 
-/*
+/**
  * Formats a float value in a string, with (eventually) sign, integer part, (eventually) decimal point and 3 decimals and (eventually) measure unit.
  * @param dest - the string to receive the formatted value. Must be previously allocated large enough (13 chars)
  * @param val -  the value to be formatted

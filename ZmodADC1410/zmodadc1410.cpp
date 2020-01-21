@@ -47,7 +47,7 @@ ZMODADC1410::ZMODADC1410(uintptr_t baseAddress, uintptr_t dmaAddress, uintptr_t 
 	ZMOD::initCalib(sizeof(CALIBECLYPSEADC), ZMODADC1410_CALIB_ID, ZMODADC1410_CALIB_USER_ADDR, ZMODADC1410_CALIB_FACT_ADDR);
 }
 
-/*
+/**
 * Allocates the data buffer used for AXI DMA transfers, 4 bytes for each element (sample).
 *
 * @param length the number of elements (samples) in the buffer.
@@ -59,7 +59,7 @@ uint32_t* ZMODADC1410::allocChannelsBuffer(size_t length) {
 	return (uint32_t *)ZMOD::allocDMABuffer(length * sizeof(uint32_t));
 }
 
-/*
+/**
 * Free the data buffer used for AXI DMA transfers, 4 bytes for each sample.
 *
  * @param buf the address of the DMA buffer
@@ -106,7 +106,7 @@ void ZMODADC1410::setTransferLength(size_t length) {
 	setTransferSize(length * sizeof(uint32_t));
 }
 
-/*
+/**
  * Extract channel data from a buffer element.
  *
  * @param channel the channel to extract  0 for channel 1, 1 for channel 2
@@ -119,7 +119,7 @@ uint16_t ZMODADC1410::channelData(uint8_t channel, uint32_t data)
 	return (channel ? (data >> 2) : (data >> 18)) & 0x00003FFF;
 }
 
-/*
+/**
  * Extract signed channel data from a buffer element, making sure the most significant bit
  * is taken into account.
  *
@@ -223,7 +223,7 @@ void ZMODADC1410::enableBufferFullInterrupt(uint8_t enBuffFullInt)
 	writeRegFld(ZMODADC1410_REGFLD_IER_BUF_FULL, enBuffFullInt);
 }
 
-/*
+/**
 * Start the ADC to acquire data according to previous acquisition settings.
 *
 */
@@ -236,7 +236,7 @@ void ZMODADC1410::start()
 	writeRegFld(ZMODADC1410_REGFLD_CR_RUNSTOP, 1);
 }
 
-/*
+/**
 * Stop the ADC acquisition process.
 *
 */
@@ -377,6 +377,7 @@ uint8_t ZMODADC1410::acquireImmediateInterrupt(uint32_t* buffer, uint8_t channel
 }
 
 #endif //LINUX_APP
+
 /**
  * Call when a ZMOD interrupt occurs.
  * For example when ZMOD's buffer full interrupt occurs, starts the DMA transfer.
@@ -574,7 +575,7 @@ void ZMODADC1410::setCalibValues(uint8_t channel, uint8_t gain, float valG, floa
 #define REAL_RANGE_ADC_HIGH 1.086
 #define REAL_RANGE_ADC_LOW 26.25
 
-/*
+/**
  * Computes the Multiplicative calibration coefficient.
  * @param cg - gain coefficient as it is stored in Flash
  * @param gain 0 LOW and 1 HIGH
@@ -588,7 +589,7 @@ int32_t ZMODADC1410::computeCoefMult(float cg, uint8_t gain)
 	return ival;
 }
 
-/*
+/**
  * Computes the Additive calibration coefficient.
  * @param ca - add coefficient as it is stored in Flash
  * @param gain 0 LOW and 1 HIGH
@@ -602,7 +603,7 @@ int32_t ZMODADC1410::computeCoefAdd(float ca, uint8_t gain)
 	return ival;
 }
 
-/*
+/**
  * Converts a signed raw value (provided by ZmodADC1410 IP core) to a value in Volts measure unit.
  * @param raw - the signed value as .
  * @param gain 0 LOW and 1 HIGH

@@ -46,7 +46,7 @@ ZMODDAC1411::ZMODDAC1411(uintptr_t baseAddress, uintptr_t dmaAddress, uintptr_t 
 }
 
 
-/*
+/**
 * Allocates the data buffer used for AXI DMA transfers, 4 bytes for each sample.
 *
 * @param length the number of samples in the buffer.
@@ -58,7 +58,7 @@ uint32_t* ZMODDAC1411::allocChannelsBuffer(size_t length) {
 	return (uint32_t *)ZMOD::allocDMABuffer(length * sizeof(uint32_t));
 }
 
-/*
+/**
 * Free the data buffer used for AXI DMA transfers, 4 bytes for each sample.
 *
  * @param buf the address of the DMA buffer
@@ -69,7 +69,8 @@ uint32_t* ZMODDAC1411::allocChannelsBuffer(size_t length) {
 void ZMODDAC1411::freeChannelsBuffer(uint32_t *buf, size_t length) {
 	ZMOD::freeDMABuffer(buf, length * sizeof(uint32_t));
 }
-/*
+
+/**
  * Position the channel data in a 32 bits value to be sent to IP.
  *
  * @param channel the channel to extract  0 for channel A, 1 for channel B
@@ -84,7 +85,7 @@ uint32_t ZMODDAC1411::arrangeChannelData(uint8_t channel, uint16_t data)
 	return (channel ? ((uint32_t)data) << 2 : ((uint32_t)data) << 18);
 }
 
-/*
+/**
  * Position the channel data in a 32 bits value to be sent to IP.
  *
  * @param channel the channel to extract  0 for channel A, 1 for channel B
@@ -98,7 +99,7 @@ uint32_t ZMODDAC1411::arrangeSignedChannelData(uint8_t channel, int16_t data)
 	return arrangeChannelData(channel, (uint32_t)data);
 }
 
-/*
+/**
  * Reset the output counter so that the next time the instrument is started the first value from the buffer will be sent to DAC.
  *
  */
@@ -136,7 +137,7 @@ uint8_t ZMODDAC1411::setData(uint32_t* buffer, size_t length)
 }
 
 
-/*
+/**
 * Start the DAC to generate the values previously prepared.
 *
 */
@@ -145,7 +146,7 @@ void ZMODDAC1411::start()
 	writeRegFld(ZMODDAC1411_REGFLD_CR_DAC_EN, 1);
 }
 
-/*
+/**
 * Stop the DAC.
 *
 */
@@ -154,7 +155,7 @@ void ZMODDAC1411::stop()
 	writeRegFld(ZMODDAC1411_REGFLD_CR_DAC_EN, 0);
 }
 
-/*
+/**
 * Set the 14 bits output sample frequency divider.
 *
 */
@@ -228,7 +229,7 @@ void ZMODDAC1411::setGain(uint8_t channel, uint8_t gain)
 #define REAL_RANGE_DAC_HIGH 5.32
 #define REAL_RANGE_DAC_LOW 1.33
 
-/*
+/**
  * Computes the Multiplicative calibration coefficient.
 * @param cg - gain coefficient as it is stored in Flash
 * @param gain 0 LOW and 1 HIGH
@@ -242,7 +243,7 @@ int32_t ZMODDAC1411::computeCoefMult(float cg, uint8_t gain)
 	return ival;
 }
 
-/*
+/**
  * Computes the Additive calibration coefficient.
  * @param ca - add coefficient as it is stored in Flash
  * @param cg - gain coefficient as it is stored in Flash
@@ -256,7 +257,7 @@ int32_t ZMODDAC1411::computeCoefAdd(float ca, float cg, uint8_t gain)
 	return ival;
 }
 
-/*
+/**
  * Converts a value in Volts measure unit into a signed raw value (to be provided to the ZmodDAC1411 IP core).
  * If the value is outside the range corresponding to the specified gain, it is limited to the nearest range limit.
  * @param raw - the signed value as .
