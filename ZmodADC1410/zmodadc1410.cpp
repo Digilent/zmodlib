@@ -200,7 +200,6 @@ uint8_t ZMODADC1410::isBufferFull()
 * Wait (by polling) until the ZMODADC1410 sets the Buffer Full bit in Status Register,
 * will block until buffer full is set.
 *
-*
 */
 void ZMODADC1410::waitForBufferFullPolling()
 {
