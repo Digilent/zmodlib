@@ -1,0 +1,5 @@
+name: 'publish-s3'
+description: 'Publishes to S3'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'

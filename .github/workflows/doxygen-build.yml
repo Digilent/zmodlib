@@ -1,0 +1,36 @@
+name: Doxygen Build
+
+on:
+  release:
+    types: [published, edited]   
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Get Release from Tag
+      run: echo ::set-env name=RELEASE_VERSION::$(echo ${GITHUB_REF:10})
+    - name: Build the Doxygen output
+      run: docker run --rm -e RELEASE_VERSION=$RELEASE_VERSION -v $(pwd):/data hrektts/doxygen doxygen
+      env:
+        RELEASE_VERSION: ${{ env.RELEASE_VERSION }}
+    - name: 'Upload doc artifact'
+      uses: actions/upload-artifact@v1
+      with:
+        name: doc
+        path: doc
+    - name: 'Push S3'
+      continue-on-error: true
+      uses: './.github/actions/publish-s3'
+      with:
+        args: --recursive
+      env:
+        FILE: ./doc/html/
+        AWS_REGION: 'us-west-2'
+        AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}/${{ env.RELEASE_VERSION }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}  
