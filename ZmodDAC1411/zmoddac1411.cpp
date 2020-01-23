@@ -224,6 +224,26 @@ void ZMODDAC1411::setGain(uint8_t channel, uint8_t gain)
 	}
 }
 
+/**
+* Set a pair of calibration values for a specific channel and gain into the calib area (interpreted as CALIBECLYPSEDAC).
+* In order for this change to be applied to user calibration area from flash, writeUserCalib function must be called.
+* @param channel the channel for which calibration values are set: 0 for channel 1, 1 for channel 2
+* @param gain the gain for which calibration values are set: 0 for LOW gain, 1 for HIGH gain
+* @param valG the gain calibration value to be set
+* @param valA the additive calibration value to be set
+*/
+void ZMODDAC1411::setCalibValues(uint8_t channel, uint8_t gain, float valG, float valA)
+{
+	CALIBECLYPSEDAC *pCalib;
+	if(calib)
+	{
+		// interpret the calib data as a CALIBECLYPSEDAC data
+		pCalib = (CALIBECLYPSEDAC *)calib;
+		pCalib->cal[channel][gain][0] = valG;
+		pCalib->cal[channel][gain][1] = valA;
+	}
+}
+
 #define IDEAL_RANGE_DAC_HIGH 5.0
 #define IDEAL_RANGE_DAC_LOW 1.25
 #define REAL_RANGE_DAC_HIGH 5.32
