@@ -84,6 +84,13 @@ uint8_t fnIsDMATransferComplete(uintptr_t addr)
 
 #define NODES_DIRECTORY "/sys/firmware/devicetree/base/amba_pl"
 
+/**
+ * Find the chardev index given the DMA address.
+ *
+ * @param dma_addr the DMA address to look for
+ *
+ * @return the chardev index if found, -1 if not
+ */
 int fnGetCharDevIndexForDmaPhandle(uint32_t dma_addr) {
 	DIR *directory = opendir(NODES_DIRECTORY);
 	char path[MAX_PATH_SIZE];
@@ -226,6 +233,7 @@ void* fnAllocBuffer(uintptr_t addr, size_t size) {
  *
  * @param addr the physical address of the DMA device
  * @param buf the address of the DMA buffer
+ * @param size the size of the DMA buffer
  */
 void fnFreeBuffer(uintptr_t addr, void *buf, size_t size) {
 	DMAEnv *dma_env = (DMAEnv *)addr;

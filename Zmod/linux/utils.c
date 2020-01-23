@@ -14,10 +14,26 @@
 
 #include "utils.h"
 
+
+/**
+ * Check if a string starts with a prefix.
+ *
+ * @param name the name to match
+ * @param prefix the prefix to search
+ *
+ * @return whether the name starts with prefix or not
+ */
 bool fnStartsWith(const char *name, const char *prefix) {
 	return !strncmp(name, prefix, strlen(prefix));
 }
 
+/**
+ * Read the first 4 bytes of a file into an uint32_t.
+ *
+ * @param file a FILE struct opened for the needed file
+ *
+ * @return the uint32_t read from the file
+ */
 uint32_t fnReadUint32FromFile(FILE *file) {
 	uint8_t bytes[4];
 	uint32_t value = 0;
@@ -32,6 +48,14 @@ uint32_t fnReadUint32FromFile(FILE *file) {
 	return value;
 }
 
+/**
+ * Read the first 4 bytes of a file into an uint32_t.
+ *
+ * @param path the path of the file
+ * @param name the name of the file
+ *
+ * @return the uint32_t read from the file
+ */
 uint32_t fnReadUint32(const char *path, const char *name) {
 	char file_path[MAX_PATH_SIZE];
 	FILE *file;

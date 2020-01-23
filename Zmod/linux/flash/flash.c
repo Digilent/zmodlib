@@ -30,8 +30,8 @@
  * Struct containing data specific to this flash instance.
  */
 typedef struct _flash_env {
-	uint16_t slave_addr;
-	int fd;
+	uint16_t slave_addr; ///< Address of the Iic slave
+	int fd; ///< File descriptor used for writing to the Iic bus
 } FlashEnv;
 
 /**
@@ -39,8 +39,8 @@ typedef struct _flash_env {
  * Selection of the Iic controller is done based on the base
  * address.
  *
- * @param addr is the Iic address of slave flash device
- * @param path is the file path to the selected Iic controller
+ * @param i2c_addr is the Iic address of slave flash device
+ * @param i2c_path is the file path to the selected Iic controller
  *
  * @return XST_SUCCESS if successful
  */
@@ -102,13 +102,13 @@ uint32_t fnInitFlash(uintptr_t addr, uint16_t slave_addr) {
 	int rc;
 	int fd;
 
-	//find the file path
+	// Find the file path
 	rc = fnGetI2cDevicePathforAddr(addr, filepath);
 	if (rc < 0) {
 		return 0;
 	}
 
-	//Allocate the falsh environment
+	// Allocate the flash environment
 	FlashEnv *flash_env = (FlashEnv *)malloc(sizeof(FlashEnv));
 	if (flash_env < 0) {
 		return 0;
@@ -119,7 +119,7 @@ uint32_t fnInitFlash(uintptr_t addr, uint16_t slave_addr) {
 		return 0;
 	}
 
-	//populate the flash environment
+	// Populate the flash environment
 	flash_env->fd = fd;
 	flash_env->slave_addr = slave_addr;
 
@@ -158,7 +158,7 @@ void fnFormatAddr(uint8_t *data, uint16_t data_addr) {
  *
  * @param addr the address of the Flash device
  * @param data_addr the address of the device register
- * @param read_val data pointer which will be read
+ * @param read_vals data pointer which will be read
  * @param length is the transfer length of the packet
  *
  * @return XST_SUCCESS if successful
@@ -171,24 +171,24 @@ int fnReadFlash(uintptr_t addr, uint16_t data_addr, uint8_t *read_vals, size_t l
 	uint8_t txData[2];
 	int rc;
 
-	//add the register address to stream
+	// Add the register address to stream
 	fnFormatAddr(txData, data_addr);
 
-	//send the Zmod slave address to the driver
+	// Send the Zmod slave address to the driver
 	rc = ioctl(flash_env->fd, I2C_SLAVE, flash_env->slave_addr);
 	if (rc < 0) {
 		printf("%s: ioctl slave set fail\r\n", __func__);
 		return rc;
 	}
 
-	//send the register address to the flash
+	// Send the register address to the flash
 	rc = write(flash_env->fd, txData, 2);
 	if (rc < 0) {
 		printf("%s: failed to write i2c register address\r\n", __func__);
 		return rc;
 	}
 
-	//read back the values
+	// Read back the values
 	rc = read(flash_env->fd, read_vals, length);
 	if (rc < 0) {
 		printf("%s: failed to read i2c register address\r\n", __func__);
