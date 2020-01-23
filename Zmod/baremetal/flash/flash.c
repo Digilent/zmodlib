@@ -1,54 +1,9 @@
-/******************************************************************************
- * @file Flash.c
- * Function declarations used for Flash transfer.
- *
- * @authors Ciprian Hegbeli
- *
- * @date 2015-Jan-20
- *
- * @copyright
- * (c) 2015 Copyright Digilent Incorporated
- * All Rights Reserved
- *
- * This program is free software; distributed under the terms of BSD 3-clause
- * license ("Revised BSD License", "New BSD License", or "Modified BSD License")
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
- * 3. Neither the name(s) of the above-listed copyright holder(s) nor the names
- *    of its contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
- * @desciption
- *
- * @note
- *
- * <pre>
- * MODIFICATION HISTORY:
- *
- * Ver   Who             Date        Changes
- * ----- --------------- ----------- --------------------------------------------
- *
- * </pre>
- *
- *****************************************************************************/
+/**
+ * @file baremetal/flash/flash.c
+ * @author Ciprian Hegbeli
+ * @date 15 Nov 2019
+ * @brief Function declarations used for Flash transfer.
+ */
 
 #ifndef LINUX_APP
 
@@ -61,20 +16,20 @@
 #include "sleep.h"
 #include "xstatus.h"
 
-//I2c clock rates
-#define IIC_SCLK_RATE 		400000
-//maximum flash transfer length
-#define FLASH_MAX_LENGTH	256
+#define IIC_SCLK_RATE 		400000 ///< I2C clock rates
+#define FLASH_MAX_LENGTH	256 ///< Maximum flash transfer length
 
-//Flash environment structure
+/**
+ * Struct containing data specific to this flash instance.
+ */
 typedef struct _flash_env {
-	uint16_t slave_addr;
+	uint16_t slave_addr; ///< Slave address
 } FlashEnv;
 
-extern XIicPs_Config XIicPs_ConfigTable[XPAR_XIICPS_NUM_INSTANCES];
+extern XIicPs_Config XIicPs_ConfigTable[XPAR_XIICPS_NUM_INSTANCES]; ///< Instances of Iic devices supported
 
-XIicPs XIicPS;				/* Instance of the IIC Device */
-bool fIicPSInit = false; 	/* Initialization flag*/
+XIicPs XIicPS; ///< Iic device instance
+bool fIicPSInit = false; ///< Iic device instance initialization flag
 
 /**
  * Extracting the configuration of Iic from the base address .
@@ -173,9 +128,9 @@ void fnFormatAddr(uint8_t *data, uint16_t data_addr) {
  * Read fom Flash .
  *
  * @param addr is the Iic address of slave flash device
- * @param flash_addr address within the flash
- * @param length of the Iic transfer in bytes
+ * @param data_addr address within the flash
  * @param read_vals pointer to the Iic read values
+ * @param length of the Iic transfer in bytes
  *
  * @return XST_SUCCESS if successful
  */
@@ -209,9 +164,9 @@ int fnReadFlash(uintptr_t addr, uint16_t data_addr, uint8_t *read_vals, size_t l
  * Write to the Flash .
  *
  * @param addr is the Iic address of slave flash device
- * @param flash_addr address within the flash
- * @param length of the Iic transfer in bytes
+ * @param data_addr address within the flash
  * @param write_vals pointer to the Iic write values
+ * @param length of the Iic transfer in bytes
  *
  * @return XST_SUCCESS if successful
  */

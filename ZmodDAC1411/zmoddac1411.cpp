@@ -1,5 +1,6 @@
 /**
- * @file zmodDAC1411.cpp
+ * @file zmoddac1411.cpp
+ * @author Cosmin Tanislav
  * @author Cristian Fatu
  * @date 15 Nov 2019
  * @brief File containing implementations of the ZMOD DAC1411 specific methods.
@@ -7,17 +8,18 @@
 
 #include <stdio.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 #include "zmoddac1411.h"
-#include <stdlib.h>
+
 /**
  * Initialize a ZMOD DAC1411 instance.
  *
- * @param baseAddr the base address of the ZMOD device,
+ * @param baseAddress the base address of the ZMOD device,
  *  can be found by either looking in the device tree files on a Linux
  *  platform, or the xparameters.h file on a baremetal platform,
  *  or in Vivado's Address Editor tab.
- * @param dmaAddr the base address of the DMA device,
+ * @param dmaAddress the base address of the DMA device,
  *  can be found by either looking in the device tree files on a Linux
  *  platform, or the xparameters.h file on a baremetal platform,
  *  or in Vivado's Address Editor tab.
@@ -28,13 +30,6 @@
  * @param flashAddress is the I2C slave address of the I2C device used for flash,
  *  can be found in the carrier board reference manual, associated to the SZG connector
  *  where the ZMpd is plugged,
- * @param direction the direction of the DMA transfer,
- *  can be either DMA_DIRECTION_TX for a transfer from the processor
- *  to the FPGA, or DMA_DIRECTION_RX for a transfer from the FPGA
- *  to the processor.
- * @param zmodInterrupt the interrupt number of the ZMOD device,
- *  can be found by looking at the xparameters.h file on a baremental
- *  platform, and is irrelevant on a Linux platform.
  * @param dmaInterrupt the interrupt number of the DMA device,
  *  can be found by looking at the xparameters.h file on a baremental
  *  platform, and is irrelevant on a Linux platform.
@@ -244,10 +239,10 @@ void ZMODDAC1411::setCalibValues(uint8_t channel, uint8_t gain, float valG, floa
 	}
 }
 
-#define IDEAL_RANGE_DAC_HIGH 5.0
-#define IDEAL_RANGE_DAC_LOW 1.25
-#define REAL_RANGE_DAC_HIGH 5.32
-#define REAL_RANGE_DAC_LOW 1.33
+#define IDEAL_RANGE_DAC_LOW 1.25 ///< Ideal range DAC LOW
+#define IDEAL_RANGE_DAC_HIGH 5.0 ///< Ideal range DAC HIGH
+#define REAL_RANGE_DAC_HIGH 5.32 ///< Real range DAC HIGH
+#define REAL_RANGE_DAC_LOW 1.33  ///< Real range DAC LOW
 
 /**
  * Computes the Multiplicative calibration coefficient.
@@ -280,9 +275,9 @@ int32_t ZMODDAC1411::computeCoefAdd(float ca, float cg, uint8_t gain)
 /**
  * Converts a value in Volts measure unit into a signed raw value (to be provided to the ZmodDAC1411 IP core).
  * If the value is outside the range corresponding to the specified gain, it is limited to the nearest range limit.
- * @param raw - the signed value as .
+ * @param voltValue the value in Volts
  * @param gain 0 LOW and 1 HIGH
- * @return the Volts value.
+ * @return the signed RAW value.
  */
 int32_t ZMODDAC1411::getSignedRawFromVolt(float voltValue, uint8_t gain)
 {

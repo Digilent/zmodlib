@@ -1,5 +1,5 @@
 /**
- * @file reg.c
+ * @file linux/dma/dma.c
  * @author Cosmin Tanislav
  * @author Cristian Fatu
  * @date 15 Nov 2019
@@ -18,6 +18,9 @@
 #include "../utils.h"
 #include "libaxidma.h"
 
+/**
+ * Struct containing data specific to this DMA instance.
+ */
 typedef struct _dma_env {
 	uintptr_t addr; ///< the physical address of the DMA device
 	enum dma_direction direction; ///< the direction of the DMA transfer

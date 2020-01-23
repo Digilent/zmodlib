@@ -15,11 +15,11 @@
 /**
  * Initialize a ZMOD ADC1410 instance.
  *
- * @param baseAddr the base address of the ZMOD device,
+ * @param baseAddress the base address of the ZMOD device,
  *  can be found by either looking in the device tree files on a Linux
  *  platform, or the xparameters.h file on a baremetal platform,
  *  or in Vivado's Address Editor tab.
- * @param dmaAddr the base address of the DMA device,
+ * @param dmaAddress the base address of the DMA device,
  *  can be found by either looking in the device tree files on a Linux
  *  platform, or the xparameters.h file on a baremetal platform,
  *  or in Vivado's Address Editor tab.
@@ -30,10 +30,6 @@
  * @param flashAddress is the I2C slave address of the I2C device used
  *  for flash, can be found in the carrier board reference manual,
  *  associated to the SZG connector where the ZMpd is plugged,
- * @param direction the direction of the DMA transfer,
- *  can be either DMA_DIRECTION_TX for a transfer from the processor
- *  to the FPGA, or DMA_DIRECTION_RX for a transfer from the FPGA
- *  to the processor.
  * @param zmodInterrupt the interrupt number of the ZMOD device,
  *  can be found by looking at the xparameters.h file on a baremental
  *  platform, and is irrelevant on a Linux platform.
@@ -213,7 +209,7 @@ void ZMODADC1410::waitForBufferFullPolling()
 /**
  * Enables / disables the buffer full ZMODADC1410 IP interrupt.
  *
- * @param length the length of the transfer in number of elements (samples) to be
+ * @param enBuffFullInt the value for the buffer enable buffer full interrupt
  *  transfered
  */
 void ZMODADC1410::enableBufferFullInterrupt(uint8_t enBuffFullInt)
@@ -364,6 +360,9 @@ uint8_t ZMODADC1410::acquireTriggeredInterrupt(uint32_t* buffer, uint8_t channel
  * Acquire data using an interrupt method, will block until the acquisition
  * completes.
  *
+ * @param buffer the buffer to receive the acquired data,
+ *  must be previously allocated to a dimension large enough to accommodate
+ *  the requested acquisition
  * @param channel the channel on which to run the data acquisition,
  *  0 for channel 1, 1 for channel 2s
  * @param length the number of samples to be acquired
@@ -518,7 +517,7 @@ uint8_t ZMODADC1410::autoTestRamp(uint8_t channel, uint32_t level, uint32_t edge
 
 /**
 * Set the gain for a channel.
-* @param channel the channel: 0 for channel 1, 1 for channel 2
+* @param channel 0 for channel 1, 1 for channel 2
 * @param gain the gain : 0 for LOW gain, 1 for HIGH gain
 */
 void ZMODADC1410::setGain(uint8_t channel, uint8_t gain)
@@ -534,9 +533,10 @@ void ZMODADC1410::setGain(uint8_t channel, uint8_t gain)
 }
 
 /**
-* Set the coupling for a channel.
-* @param channel the channel: 0 for DC Coupling, 1 for AC Coupling
-*/
+ * Set the coupling for a channel.
+ * @param channel 0 for channel 1, 1 for channel 2
+ * @param coupling 0 for DC Coupling, 1 for AC Coupling
+ */
 void ZMODADC1410::setCoupling(uint8_t channel, uint8_t coupling)
 {
 	if(channel)
@@ -550,13 +550,13 @@ void ZMODADC1410::setCoupling(uint8_t channel, uint8_t coupling)
 }
 
 /**
-* Set a pair of calibration values for a specific channel and gain into the calib area (interpreted as CALIBECLYPSEADC).
-* In order for this change to be applied to user calibration area from flash, writeUserCalib function must be called.
-* @param channel the channel for which calibration values are set: 0 for channel 1, 1 for channel 2
-* @param gain the gain for which calibration values are set: 0 for LOW gain, 1 for HIGH gain
-* @param valG the gain calibration value to be set
-* @param valA the additive calibration value to be set
-*/
+ * Set a pair of calibration values for a specific channel and gain into the calib area (interpreted as CALIBECLYPSEADC).
+ * In order for this change to be applied to user calibration area from flash, writeUserCalib function must be called.
+ * @param channel the channel for which calibration values are set: 0 for channel 1, 1 for channel 2
+ * @param gain the gain for which calibration values are set: 0 for LOW gain, 1 for HIGH gain
+ * @param valG the gain calibration value to be set
+ * @param valA the additive calibration value to be set
+ */
 void ZMODADC1410::setCalibValues(uint8_t channel, uint8_t gain, float valG, float valA)
 {
 	CALIBECLYPSEADC *pCalib;
@@ -569,14 +569,14 @@ void ZMODADC1410::setCalibValues(uint8_t channel, uint8_t gain, float valG, floa
 	}
 }
 
-#define IDEAL_RANGE_ADC_HIGH 1.0
-#define IDEAL_RANGE_ADC_LOW 25.0
-#define REAL_RANGE_ADC_HIGH 1.086
-#define REAL_RANGE_ADC_LOW 26.25
+#define IDEAL_RANGE_ADC_HIGH 1.0 ///< Ideal range ADC LOW
+#define IDEAL_RANGE_ADC_LOW 25.0 ///< Ideal range ADC HIGH
+#define REAL_RANGE_ADC_HIGH 1.086 ///< Real range ADC HIGH
+#define REAL_RANGE_ADC_LOW 26.25 ///< Real range ADC LOW
 
 /**
  * Computes the Multiplicative calibration coefficient.
- * @param cg - gain coefficient as it is stored in Flash
+ * @param cg gain coefficient as it is stored in Flash
  * @param gain 0 LOW and 1 HIGH
  * @return a signed 32 value containing the multiplicative coefficient in the 18 lsb bits: bit 17 sign, bit 16-0 the value
  */

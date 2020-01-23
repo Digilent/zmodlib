@@ -14,48 +14,53 @@
 #ifndef _ZMOD_H
 #define  _ZMOD_H
 
-#define ERR_SUCCESS 	0
-#define ERR_FAIL		-1
-#define ERR_CALIB_CRC	-2
-#define ERR_CALIB_ID	-3
+/**
+ * Error codes
+ */
+#define ERR_SUCCESS 	0 	///< Success
+#define ERR_FAIL		-1	///< General fail
+#define ERR_CALIB_CRC	-2	///< CRC check fail
+#define ERR_CALIB_ID	-3	///< Calib ID check fail
 
-#define ZMOD_REG_ADDR_CR 				0x00	// CR 				register address
-#define ZMOD_REG_ADDR_SR 				0x04	// SR 				register address
-#define ZMOD_REG_ADDR_IER	 			0x08	// IER 				register address
-#define ZMOD_REG_ADDR_CMD_TX 			0x0C	// CMD_TX 			register address
-#define ZMOD_REG_ADDR_CMD_RX 			0x10	// CMD_RX 			register address
-#define ZMOD_REG_ADDR_AXIS_S2MM_LENGTH 	0x14	// AXIS_S2MM_LENGTH	register address
-#define ZMOD_REG_ADDR_AXIS_MM2S_LENGTH 	0x18	// AXIS_MM2S_LENGTH	register address
+/**
+ * ZMOD common registers
+ */
+#define ZMOD_REG_ADDR_CR 				0x00	///< CR					register address
+#define ZMOD_REG_ADDR_SR 				0x04	///< SR 				register address
+#define ZMOD_REG_ADDR_IER	 			0x08	///< IER 				register address
+#define ZMOD_REG_ADDR_CMD_TX 			0x0C	///< CMD_TX 			register address
+#define ZMOD_REG_ADDR_CMD_RX 			0x10	///< CMD_RX 			register address
+#define ZMOD_REG_ADDR_AXIS_S2MM_LENGTH 	0x14	///< AXIS_S2MM_LENGTH	register address
+#define ZMOD_REG_ADDR_AXIS_MM2S_LENGTH 	0x18	///< AXIS_MM2S_LENGTH	register address
+#define ZMOD_REGFLD_CR_CMD_RUNSTP		ZMOD_REG_ADDR_CR,  1, 1	///< CMD_RUNSTP 	field of CR register
+#define ZMOD_REGFLD_CR_CMD_READ_EN  	ZMOD_REG_ADDR_CR,  2, 1	///< CMD_READ_EN 	field of CR register
+#define ZMOD_REGFLD_CR_INTR_EN 			ZMOD_REG_ADDR_CR,  3, 1	///< INTR_EN 		field of CR register
+#define ZMOD_REGFLD_CR_RST 				ZMOD_REG_ADDR_CR, 31, 1	///< RST 			field of CR register
+#define ZMOD_REGFLD_SR_CMD_TX_DONE 		ZMOD_REG_ADDR_SR, 0, 1	///< TX_DONE 		field of SR register
+#define ZMOD_REGFLD_SR_CMD_RUNNING  	ZMOD_REG_ADDR_SR, 2, 1	///< CMD_RUNNING	field of SR register
+#define ZMOD_REGFLD_SR_CMD_TX_COUNT		ZMOD_REG_ADDR_SR, 3, 7	///< CMD_TX_COUNT	field of SR register
+#define ZMOD_REGFLD_SR_CMD_RX_COUNT		ZMOD_REG_ADDR_SR, 10, 7	///< CMD_RX_COUNT	field of SR register
+#define ZMOD_REGFLD_IER_CMD_TX_DONE		ZMOD_REG_ADDR_IER, 0, 1	///< CMD_TX_DONE		field of IER register
+#define ZMOD_REGFLD_IER_CMD_RX_DONE		ZMOD_REG_ADDR_IER, 1, 1	///< CMD_RX_DONE  	field of IER register
+#define ZMOD_REGFLD_IER_CMD_TX_RX_ERROR	ZMOD_REG_ADDR_IER, 2, 4	///< CMD_TX_RX_ERROR	field of IER register
+#define ZMOD_REGFLD_AXIS_S2MM_LENGTH_LENGTH	ZMOD_REG_ADDR_AXIS_S2MM_LENGTH, 0, 26	///< LENGTH field of AXIS_S2MM_LENGTH register
+#define ZMOD_REGFLD_AXIS_MM2S_LENGTH_LENGTH ZMOD_REG_ADDR_AXIS_MM2S_LENGTH, 0, 26	///< LENGTH field of AXIS_MM2S_LENGTH register
 
-#define ZMOD_REGFLD_CR_CMD_RUNSTP		ZMOD_REG_ADDR_CR,  1, 1	// CMD_RUNSTP 	field of CR register
-#define ZMOD_REGFLD_CR_CMD_READ_EN  	ZMOD_REG_ADDR_CR,  2, 1	// CMD_READ_EN 	field of CR register
-#define ZMOD_REGFLD_CR_INTR_EN 			ZMOD_REG_ADDR_CR,  3, 1	// INTR_EN 		field of CR register
-#define ZMOD_REGFLD_CR_RST 				ZMOD_REG_ADDR_CR, 31, 1	// RST 			field of CR register
-
-#define ZMOD_REGFLD_SR_CMD_TX_DONE 		ZMOD_REG_ADDR_SR, 0, 1	// TX_DONE 		field of SR register
-#define ZMOD_REGFLD_SR_CMD_RUNNING  	ZMOD_REG_ADDR_SR, 2, 1	// CMD_RUNNING	field of SR register
-#define ZMOD_REGFLD_SR_CMD_TX_COUNT		ZMOD_REG_ADDR_SR, 3, 7	// CMD_TX_COUNT	field of SR register
-#define ZMOD_REGFLD_SR_CMD_RX_COUNT		ZMOD_REG_ADDR_SR, 10, 7	// CMD_RX_COUNT	field of SR register
-
-#define ZMOD_REGFLD_IER_CMD_TX_DONE		ZMOD_REG_ADDR_IER, 0, 1	// CMD_TX_DONE		field of IER register
-#define ZMOD_REGFLD_IER_CMD_RX_DONE		ZMOD_REG_ADDR_IER, 1, 1	// CMD_RX_DONE  	field of IER register
-#define ZMOD_REGFLD_IER_CMD_TX_RX_ERROR	ZMOD_REG_ADDR_IER, 2, 4	// CMD_TX_RX_ERROR	field of IER register
-
-#define ZMOD_REGFLD_AXIS_S2MM_LENGTH_LENGTH	ZMOD_REG_ADDR_AXIS_S2MM_LENGTH, 0, 26	// LENGTH field of AXIS_S2MM_LENGTH register
-#define ZMOD_REGFLD_AXIS_MM2S_LENGTH_LENGTH ZMOD_REG_ADDR_AXIS_MM2S_LENGTH, 0, 26	// LENGTH field of AXIS_MM2S_LENGTH register
-
+/**
+ * Class containing functionality common to all ZMODs.
+ */
 class ZMOD {
 protected:
-	uintptr_t 	baseAddr;
-	uintptr_t 	dmaAddr;
-	uintptr_t 	flashAddr;
-	size_t	transferSize;
-	uint8_t *calib;
-	uint32_t calibSize;
-	uint16_t userCalibAddr;
-	uint16_t factCalibAddr;
-	uint8_t calibID;
-	enum dma_direction direction;
+	uintptr_t 	baseAddr; ///< Zmod base address
+	uintptr_t 	dmaAddr; ///< DMA environment pointer
+	uintptr_t 	flashAddr; ///< Flash  base address
+	size_t	transferSize; ///< DMA transfer size
+	uint8_t *calib; ///< pointer to calibration data
+	uint32_t calibSize; ///< calibration size
+	uint16_t userCalibAddr; ///< address of user calibration area
+	uint16_t factCalibAddr;///< address of factory calibration area
+	uint8_t calibID; ///< calibration ID
+	enum dma_direction direction; ///< DMA tranfer direction
 	int initCalib(uint32_t calibSize, uint8_t calibID, uint32_t userCalibAddr,uint32_t factCalibAddr);
 	void* allocDMABuffer(size_t size);
 	void freeDMABuffer(uint32_t *buf, size_t size);

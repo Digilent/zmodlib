@@ -1,3 +1,10 @@
+/**
+ * @file reg.h
+ * @author Cosmin Tanislav
+ * @author Cristian Fatu
+ * @date 15 Nov 2019
+ * @brief Function declarations used for IP register access.
+ */
 #include <stdint.h>
 
 #ifndef REG_H_

@@ -1,5 +1,5 @@
 /**
- * @file reg.c
+ * @file baremetal/reg/reg.c
  * @author Cosmin Tanislav
  * @author Cristian Fatu
  * @date 15 Nov 2019

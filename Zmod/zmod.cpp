@@ -18,11 +18,11 @@ void fnZmodInterruptHandler(void *data);
 /**
  * ZMOD class constructor.
  *
- * @param baseAddr the base address of the ZMOD device,
+ * @param baseAddress the base address of the ZMOD device,
  *  can be found by either looking in the device tree files on a Linux
  *  platform, or the xparameters.h file on a baremetal platform,
  *  or in Vivado's Address Editor tab.
- * @param dmaAddr the base address of the DMA device,
+ * @param dmaAddress the base address of the DMA device,
  *  can be found by either looking in the device tree files on a Linux
  *  platform, or the xparameters.h file on a baremetal platform,
  *  or in Vivado's Address Editor tab.
@@ -236,7 +236,7 @@ void ZMOD::freeDMABuffer(uint32_t *buf, size_t size) {
 /**
  * Set the length (in bytes) of a transfer.
  *
- * @param length the length of the transfer in number of bytes to be
+ * @param size the length of the transfer in number of bytes to be
  *  transfered
  */
 void ZMOD::setTransferSize(size_t size) {

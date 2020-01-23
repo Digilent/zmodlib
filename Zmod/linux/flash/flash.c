@@ -1,8 +1,8 @@
-/*
- * flash.c
- *
- *  Created on: Nov 29, 2019
- *      Author: cipi
+/**
+ * @file linux/flash/flash.c
+ * @author Ciprian Hegbeli
+ * @date 15 Nov 2019
+ * @brief Function declarations used for Flash transfer.
  */
 
 #ifdef LINUX_APP
@@ -26,12 +26,13 @@
 //maximum flash transfer length
 #define FLASH_MAX_LENGTH 		256
 
-//Flash environment structure
+/**
+ * Struct containing data specific to this flash instance.
+ */
 typedef struct _flash_env {
 	uint16_t slave_addr;
 	int fd;
 } FlashEnv;
-
 
 /**
  * Determines the file path of the selected Iic controller.

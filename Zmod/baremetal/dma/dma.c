@@ -1,5 +1,5 @@
 /**
- * @file dma.c
+ * @file baremetal/dma/dma.c
  * @author Cosmin Tanislav
  * @author Cristian Fatu
  * @date 15 Nov 2019
@@ -19,29 +19,20 @@
 extern XScuGic sIntc;
 extern bool fIntCInit;
 
-#define AXIDMA_REG_ADDR_MM2S_DMACR 		0x00
-#define AXIDMA_REG_ADDR_MM2S_SA 		0x18
-#define AXIDMA_REG_ADDR_MM2S_LENGTH 	0x28
+#define AXIDMA_REG_ADDR_MM2S_DMACR 		0x00 ///< MM2S DMACR register
+#define AXIDMA_REG_ADDR_MM2S_SA 		0x18 ///< MM2S SA register
+#define AXIDMA_REG_ADDR_MM2S_SA_LENGTH 	0x28 ///< MM2S SA length register
+#define AXIDMA_REG_ADDR_S2MM_DMACR 		0x30 ///< S2MM DMACR register
+#define AXIDMA_REG_ADDR_S2MM_DA 		0x48 ///< S2MM DA register
+#define AXIDMA_REG_ADDR_S2MM_DA_LENGTH	0x58 ///< S2MM DA length register
+#define AXIDMA_REGFLD_MM2S_DMACR_RUNSTOP 		AXIDMA_REG_ADDR_MM2S_DMACR, 0, 1 ///< RUNSTOP field of MM2S_DMACR DMA register
+#define AXIDMA_REGFLD_MM2S_DMACR_IOC_IRQ 		AXIDMA_REG_ADDR_MM2S_DMACR, 12, 1 ///< IOC_IRQ field of MM2S_DMACR DMA register
+#define AXIDMA_REGFLD_S2MM_DMACR_RUNSTOP 		AXIDMA_REG_ADDR_S2MM_DMACR, 0, 1 ///< RUNSTOP field of S2MM_DMACR DMA register
+#define AXIDMA_REGFLD_S2MM_DMACR_IOC_IRQ 		AXIDMA_REG_ADDR_S2MM_DMACR, 12, 1 ///< IOC_IRQ field of S2MM_DMACR DMA register
 
-
-#define AXIDMA_REG_ADDR_S2MM_DMACR 		0x30
-#define AXIDMA_REG_ADDR_S2MM_DA 		0x48
-#define AXIDMA_REG_ADDR_S2MM_DA_LENGTH	0x58
-
-
-
-
-// RUNSTOP field of MM2S_DMACR DMA register
-#define AXIDMA_REGFLD_MM2S_DMACR_RUNSTOP 		AXIDMA_REG_ADDR_MM2S_DMACR, 0, 1
-// IOC_IRQ field of MM2S_DMACR DMA register
-#define AXIDMA_REGFLD_MM2S_DMACR_IOC_IRQ 		AXIDMA_REG_ADDR_MM2S_DMACR, 12, 1
-
-// RUNSTOP field of S2MM_DMACR DMA register
-#define AXIDMA_REGFLD_S2MM_DMACR_RUNSTOP 		AXIDMA_REG_ADDR_S2MM_DMACR, 0, 1
-// IOC_IRQ field of S2MM_DMACR DMA register
-#define AXIDMA_REGFLD_S2MM_DMACR_IOC_IRQ 		AXIDMA_REG_ADDR_S2MM_DMACR, 12, 1
-
-
+/**
+ * Struct containing data specific to this DMA instance.
+ */
 typedef struct _dmaEnv {
 	enum dma_direction direction; ///< the direction of the DMA transfer
 	XAxiDma *xAxiDma; ///< a pointer to the XAxiDma driver instance data
@@ -76,6 +67,7 @@ uint32_t readDMAReg(uintptr_t baseAddr, uint8_t regAddr) {
 /**
  * Write a register field.
  *
+ * @param baseAddr the base address of the DMA device
  * @param regAddr the offset address of the register
  * @param lsbBit the index of the first bit to write out of the register
  * @param noBits the number of bits to write
@@ -322,7 +314,7 @@ int fnOneWayDMATransfer(uintptr_t addr, uint32_t *buf, size_t transfer_size){
 		writeDMARegFld(dmaEnv->base_addr, AXIDMA_REGFLD_MM2S_DMACR_RUNSTOP, 1);
 
 		// Start DMA Transfer
-		writeDMAReg(dmaEnv->base_addr, AXIDMA_REG_ADDR_MM2S_LENGTH, transfer_size);
+		writeDMAReg(dmaEnv->base_addr, AXIDMA_REG_ADDR_MM2S_SA_LENGTH, transfer_size);
 	}
 
 	return 0;
@@ -343,6 +335,12 @@ uint8_t fnIsDMATransferComplete(uintptr_t addr) {
 	return dmaEnv->complete_flag;
 }
 
+/**
+ * Check if the DMA transfer previously started has completed by polling
+ * a register.
+ *
+ * @param addr the physical address of the DMA device
+ */
 uint8_t fnIsDMATransferCompletePoll(uintptr_t addr) {
 	DMAEnv *dmaEnv = (DMAEnv *)addr;
 	if (!dmaEnv)
@@ -371,6 +369,7 @@ void* fnAllocBuffer(uintptr_t addr, size_t size) {
  *
  * @param addr the physical address of the DMA device
  * @param buf the address of the DMA buffer
+ * @param size the size of the DMA buffer
  */
 void fnFreeBuffer(uintptr_t addr, void *buf, size_t size) {
 	if (buf)
