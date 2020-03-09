@@ -6,4 +6,4 @@ This is a software library intended to offer a development platform as well a st
 
 For more details please visit the [Zmod Base Library User Guide](https://reference.digilentinc.com/reference/zmod/zmodbaselibraryuserguide) on the Digilent WIki.
 
-For technical support or questions, please post on the [Digilent Forum](forum.digilentinc.com).
+For technical support or questions, please post on the [Digilent Forum](https://forum.digilentinc.com/).
