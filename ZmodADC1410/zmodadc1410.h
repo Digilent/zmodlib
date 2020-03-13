@@ -11,9 +11,13 @@
 #ifndef _ZMODADC1410_H
 #define  _ZMODADC1410_H
 
+#define ZMODADC1410_MAX_BUFFER_LEN	0x3FFF	// maximum buffer length supported by ZmodADC1410 IP
+
+
 /**
  * ZMODADC1410 specific registers
  */
+
 #define ZMODADC1410_REG_ADDR_TRIG			0x1C	///< TRIG				register address
 #define ZMODADC1410_REG_ADDR_WINDOW			0x20	///< WINDOW			register address
 #define ZMODADC1410_REG_ADDR_SC1LGMULTCOEF	0x24	///< SC1LGMULTCOEF 	register address
@@ -24,6 +28,7 @@
 #define ZMODADC1410_REG_ADDR_SC2LGADDCOEF	0x38	///< SC2LGADDCOEF 	register address
 #define ZMODADC1410_REG_ADDR_SC2HGMULTCOEF	0x3C	///< SC2HGMULTCOEF 	register address
 #define ZMODADC1410_REG_ADDR_SC2HGADDCOEF	0x40	///< SC2HGADDCOEF 	register address
+
 
 /**
  * ZMODADC1410 specific register fields
@@ -87,12 +92,12 @@ protected:
 
 public:
 	ZMODADC1410(uintptr_t baseAddress, uintptr_t dmaAddress, uintptr_t iicAddress, uintptr_t flashAddress, int zmodInterrupt, int dmaInterrupt);
-	uint32_t* allocChannelsBuffer(size_t length);
+	uint32_t* allocChannelsBuffer(size_t &length);
 	void freeChannelsBuffer(uint32_t *buf, size_t length);
 	uint16_t channelData(uint8_t channel, uint32_t data);
 	int16_t signedChannelData(uint8_t channel, uint32_t data);
 
-	void setTransferLength(size_t length);
+	void setTransferLength(size_t &length);
 	void setTrigger(uint8_t channel, uint8_t mode, int16_t level, uint8_t edge, uint32_t window);
 	void enableBufferFullInterrupt(uint8_t enBuffFullInt);
 	uint8_t isBufferFull();
@@ -102,7 +107,7 @@ public:
 	void stop();
 
 	uint8_t acquireTriggeredPolling(uint32_t* buffer, uint8_t channel, uint32_t level, uint32_t edge, uint32_t window, size_t length);
-	uint8_t acquireImmediatePolling(uint32_t* buffer, size_t length);
+	uint8_t acquireImmediatePolling(uint32_t* buffer, size_t &length);
 #ifndef LINUX_APP
 	uint8_t acquireTriggeredInterrupt(uint32_t* buffer, uint8_t channel, uint32_t level, uint32_t edge, uint32_t window, size_t length);
 	uint8_t acquireImmediateInterrupt(uint32_t* buffer, uint8_t channel, size_t length);

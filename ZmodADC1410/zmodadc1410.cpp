@@ -45,13 +45,19 @@ ZMODADC1410::ZMODADC1410(uintptr_t baseAddress, uintptr_t dmaAddress, uintptr_t 
 
 /**
 * Allocates the data buffer used for AXI DMA transfers, 4 bytes for each element (sample).
+* The length of the allocated buffer is limited to the maximum supported buffer length (0x3FFF),
+* altering the value of the reference parameter accordingly.
 *
-* @param length the number of elements (samples) in the buffer.
+* @param length the number of elements (samples) in the buffer - passed by reference
 *
 * @return the pointer to the allocated buffer
 *
 */
-uint32_t* ZMODADC1410::allocChannelsBuffer(size_t length) {
+uint32_t* ZMODADC1410::allocChannelsBuffer(size_t &length) {
+	if(length > ZMODADC1410_MAX_BUFFER_LEN)
+	{
+		length = ZMODADC1410_MAX_BUFFER_LEN;
+	}
 	return (uint32_t *)ZMOD::allocDMABuffer(length * sizeof(uint32_t));
 }
 
@@ -93,11 +99,18 @@ void ZMODADC1410::setTrigger(uint8_t channel, uint8_t mode, int16_t level, uint8
 
 /**
  * Set the length of a transfer.
+ *  The length of the allocated buffer is limited to the maximum supported buffer length (0x3FFF),
+ * altering the value of the reference parameter accordingly.
  *
  * @param length the length of the transfer in number of elements (samples) to be
- *  transfered
+ *  transfered - passed by reference
+ *
  */
-void ZMODADC1410::setTransferLength(size_t length) {
+void ZMODADC1410::setTransferLength(size_t &length) {
+	if(length > ZMODADC1410_MAX_BUFFER_LEN)
+	{
+		length = ZMODADC1410_MAX_BUFFER_LEN;
+	}
 	// multiply by the size of the data
 	setTransferSize(length * sizeof(uint32_t));
 }
@@ -275,7 +288,7 @@ uint8_t ZMODADC1410::acquireTriggeredPolling(uint32_t* buffer, uint8_t channel, 
  *
  * @return 0 on success, any other number on failure
  */
-uint8_t ZMODADC1410::acquireImmediatePolling(uint32_t* buffer, size_t length)
+uint8_t ZMODADC1410::acquireImmediatePolling(uint32_t* buffer, size_t &length)
 {
 	return acquirePolling(buffer, 0, 1, 0, 0, 0, length);
 }

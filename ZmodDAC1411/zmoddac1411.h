@@ -11,6 +11,8 @@
 #ifndef _ZMODDAC1411_H
 #define  _ZMODDAC1411_H
 
+#define ZmodDAC1411_MAX_BUFFER_LEN	0x3FFF	// maximum buffer length supported by ZmodDAC1411 IP
+
 
 /**
  * ZMODDAC1411 specific register fields
@@ -75,13 +77,13 @@ protected:
 public:
 	ZMODDAC1411(uintptr_t baseAddress, uintptr_t dmaAddress, uintptr_t iicAddress, uintptr_t flashAddress, int dmaInterrupt);
 
-	uint32_t* allocChannelsBuffer(size_t length);
+	uint32_t* allocChannelsBuffer(size_t &length);
 	void freeChannelsBuffer(uint32_t *buf, size_t length);
 	uint32_t arrangeChannelData(uint8_t channel, uint16_t data);
 	uint32_t arrangeSignedChannelData(uint8_t channel, int16_t data);
 
 	void setOutputSampleFrequencyDivider(uint16_t val);
-	uint8_t setData(uint32_t* buffer, size_t length);
+	uint8_t setData(uint32_t* buffer, size_t &length);
 	void setGain(uint8_t channel, uint8_t gain);
 
 	void start();
