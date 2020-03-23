@@ -11,7 +11,6 @@
 
 #include <stdint.h>
 
-#define DMA_BUF_SIZE 0xFFF0	///< DMA buffer size (2^16 - 4)
 
 /**
  * Direction of a DMA transfer.

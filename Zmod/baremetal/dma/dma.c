@@ -359,7 +359,7 @@ uint8_t fnIsDMATransferCompletePoll(uintptr_t addr) {
  */
 void* fnAllocBuffer(uintptr_t addr, size_t size) {
 
-	uint32_t *buf = (uint32_t *)malloc(DMA_BUF_SIZE);
+	uint32_t *buf = (uint32_t *)malloc(size);
 
 	return buf;
 }
