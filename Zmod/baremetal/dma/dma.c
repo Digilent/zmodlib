@@ -16,7 +16,7 @@
 #include "../../dma.h"
 #include "../intc/intc.h"
 
-extern XScuGic sIntc;
+extern INTC Intc;
 extern bool fIntCInit;
 
 #define AXIDMA_REG_ADDR_MM2S_DMACR 		0x00 ///< MM2S DMACR register
@@ -224,7 +224,7 @@ uint32_t fnInitDMA(uintptr_t dmaBaseAddr, enum dma_direction direction,
 
 	// Init interrupt controller
 	if (!fIntCInit) {
-		fnInitInterruptController(&sIntc);
+		fnInitInterruptController(&Intc);
 		fIntCInit = true;
 	}
 
@@ -242,7 +242,7 @@ uint32_t fnInitDMA(uintptr_t dmaBaseAddr, enum dma_direction direction,
 	}
 
 	// Enable all interrupts in the interrupt vector table
-	fnEnableInterrupts(&sIntc, &ivt[0], sizeof(ivt)/sizeof(ivt[0]));
+	fnEnableInterrupts(&Intc, &ivt[0], sizeof(ivt)/sizeof(ivt[0]));
 
 	dmaEnv->direction = direction;
 	if (dmaEnv->direction == DMA_DIRECTION_RX) {
@@ -369,7 +369,6 @@ void* fnAllocBuffer(uintptr_t addr, size_t size) {
  *
  * @param addr the physical address of the DMA device
  * @param buf the address of the DMA buffer
- * @param size the size of the DMA buffer
  */
 void fnFreeBuffer(uintptr_t addr, void *buf, size_t size) {
 	if (buf)

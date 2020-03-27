@@ -9,7 +9,14 @@
 #define INTC_H_
 
 #include "xstatus.h"
+#ifdef __ZYNQ__
 #include "xscugic.h"
+#define INTC XScuGic
+#else
+#include "xintc.h"
+#define INTC XIntc
+#endif
+
 #include "xil_exception.h"
 
 /**
@@ -21,8 +28,8 @@ typedef struct {
 	void *pvCallbackRef; ///< Interrupt callback
 } ivt_t;
 
-XStatus fnInitInterruptController(XScuGic *psIntc);
-void fnEnableInterrupts(XScuGic *psIntc, const ivt_t *prgsIvt, unsigned int csIVectors);
+XStatus fnInitInterruptController(INTC *psIntc);
+void fnEnableInterrupts(INTC *psIntc, const ivt_t *prgsIvt, unsigned int csIVectors);
 
 
 #endif /* INTC_H_ */
