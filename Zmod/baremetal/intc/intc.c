@@ -25,6 +25,8 @@ XStatus fnInitInterruptController(INTC *pIntc)
 {
 
 	// Init driver instance
+#ifdef __ZYNQ__
+	XScuGic_Config *IntcConfig;
 
 	IntcConfig = XScuGic_LookupConfig(INTC_DEVICE_ID);
 	if (IntcConfig == NULL)
