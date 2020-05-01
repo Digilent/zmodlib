@@ -10,24 +10,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "xparameters.h"
-#include "xil_printf.h"
-#ifdef __ZYNQ__
-#include "xiicps.h"
-#define Iic_Config XIicPs_Config
-#define Iic_ConfigTable XIicPs_ConfigTable
-#define Iic XIicPs
-#define NUMINSTANCES XPAR_XIICPS_NUM_INSTANCES
-#define Iic_CfgInitialize XIicPs_CfgInitialize
-#else
-#include "xiic.h"
-#define Iic_Config XIic_Config
-#define Iic_ConfigTable XIic_ConfigTable
-#define Iic XIic
-#define NUMINSTANCES XPAR_XIIC_NUM_INSTANCES
-#define Iic_CfgInitialize XIic_CfgInitialize
-#endif
 
+#include "../../flash.h"
 #include "sleep.h"
 #include "xstatus.h"
 
@@ -107,8 +91,8 @@ uint32_t fnInitFlash(uintptr_t addr, uint16_t slave_addr)
 	}
 
 	//set the desired clock rate
-#ifdef __ZYNQ__
-	XIicPs_SetSClk(&XIicPS, IIC_SCLK_RATE);
+#ifdef PLATFORM_ZYNQ
+	XIicPs_SetSClk(&IicDev, IIC_SCLK_RATE);
 #endif
 
 iic_init_done:
@@ -145,6 +129,8 @@ void fnFormatAddr(uint8_t *data, uint16_t data_addr) {
  * Read fom Flash .
  *
  * @param addr is the Iic address of slave flash device
+ * @param data_addr address within the flash
+ * @param read_vals pointer to the Iic read values
  * @param length of the Iic transfer in bytes
  *
  * @return XST_SUCCESS if successful
@@ -160,14 +146,14 @@ int fnReadFlash(uintptr_t addr, uint16_t data_addr, uint8_t *read_vals, size_t l
 
 	fnFormatAddr(u8TxData, data_addr);
 
-#ifdef __ZYNQ__
+#ifdef PLATFORM_ZYNQ
 	// Send the read address
-	u8BytesSent = XIicPs_MasterSendPolled(&XIicPS, u8TxData, 2, flash_env->slave_addr);
-	while (XIicPs_BusIsBusy(&XIicPS)) {}
+	u8BytesSent = XIicPs_MasterSendPolled(&IicDev, u8TxData, 2, flash_env->slave_addr);
+	while (XIicPs_BusIsBusy(&IicDev)) {}
 
 	// Receive function form the flash
-	u8BytesSent = XIicPs_MasterRecvPolled(&XIicPS, (uint8_t *)read_vals, length, flash_env->slave_addr);
-	while (XIicPs_BusIsBusy(&XIicPS)) {}
+	u8BytesSent = XIicPs_MasterRecvPolled(&IicDev, (uint8_t *)read_vals, length, flash_env->slave_addr);
+	while (XIicPs_BusIsBusy(&IicDev)) {}
 
 #else
 	u8BytesSent = XIic_Send(IicDev.BaseAddress, flash_env->slave_addr, u8TxData, 2, XIIC_STOP);
@@ -185,6 +171,8 @@ int fnReadFlash(uintptr_t addr, uint16_t data_addr, uint8_t *read_vals, size_t l
  * Write to the Flash .
  *
  * @param addr is the Iic address of slave flash device
+ * @param data_addr address within the flash
+ * @param write_vals pointer to the Iic write values
  * @param length of the Iic transfer in bytes
  *
  * @return XST_SUCCESS if successful
@@ -203,10 +191,10 @@ int fnWriteFlash(uintptr_t addr, uint16_t data_addr, uint8_t *write_vals, size_t
 	// Copy the data in to the send data structure
 	memcpy(u8TxData + 2, (const void *)write_vals, length);
 
-#ifdef __ZYNQ__
+#ifdef PLATFORM_ZYNQ
 	// Send the data to the flash
-	u8BytesSent = XIicPs_MasterSendPolled(&XIicPS, u8TxData, length + 2, flash_env->slave_addr);
-	while (XIicPs_BusIsBusy(&XIicPS)) {}
+	u8BytesSent = XIicPs_MasterSendPolled(&IicDev, u8TxData, length + 2, flash_env->slave_addr);
+	while (XIicPs_BusIsBusy(&IicDev)) {}
 #else
 	u8BytesSent = XIic_Send(IicDev.BaseAddress, flash_env->slave_addr, u8TxData, length+2, XIIC_STOP);
 #endif

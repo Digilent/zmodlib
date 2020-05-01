@@ -7,8 +7,6 @@
 
 #ifndef LINUX_APP
 #include "intc.h"
-#include "xparameters.h"
-#define INTC_DEVICE_ID XPAR_INTC_0_DEVICE_ID
 
 INTC Intc;
 bool fIntCInit = false;
@@ -25,7 +23,7 @@ XStatus fnInitInterruptController(INTC *pIntc)
 {
 
 	// Init driver instance
-#ifdef __ZYNQ__
+#ifdef PLATFORM_ZYNQ
 	XScuGic_Config *IntcConfig;
 
 	IntcConfig = XScuGic_LookupConfig(INTC_DEVICE_ID);
@@ -41,7 +39,7 @@ XStatus fnInitInterruptController(INTC *pIntc)
 	// This is in fact the ISR dispatch routine, which calls our ISRs
 
 	Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
-				(Xil_ExceptionHandler)XScugic_InterruptHandler,
+				(Xil_ExceptionHandler)XScuGic_InterruptHandler,
 				pIntc);
 #else
 	RETURN_ON_FAILURE(XIntc_Initialize(pIntc, INTC_DEVICE_ID));
@@ -79,9 +77,9 @@ void fnEnableInterrupts(INTC *pIntc, const ivt_t *prgsIvt, unsigned int csIVecto
 	for (isIVector = 0; isIVector < csIVectors; isIVector++)
 	{
 		/* Connect & Enable the interrupt vector at the interrupt controller */
-#ifdef __ZYNQ__
-		XScuGic_Connect(psIntc, prgsIvt[isIVector].id, prgsIvt[isIVector].handler, prgsIvt[isIVector].pvCallbackRef);
-		XScuGic_Enable(psIntc, prgsIvt[isIVector].id);
+#ifdef PLATFORM_ZYNQ
+		XScuGic_Connect(pIntc, prgsIvt[isIVector].id, prgsIvt[isIVector].handler, prgsIvt[isIVector].pvCallbackRef);
+		XScuGic_Enable(pIntc, prgsIvt[isIVector].id);
 #else
 		XIntc_Connect(pIntc, prgsIvt[isIVector].id, prgsIvt[isIVector].handler, prgsIvt[isIVector].pvCallbackRef);
 		XIntc_Enable(pIntc, prgsIvt[isIVector].id);
