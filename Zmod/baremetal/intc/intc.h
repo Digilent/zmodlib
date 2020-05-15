@@ -8,8 +8,22 @@
 #ifndef INTC_H_
 #define INTC_H_
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
+#include "xparameters.h"
 #include "xstatus.h"
+#ifdef PLATFORM_ZYNQ
 #include "xscugic.h"
+#define INTC XScuGic
+#define INTC_DEVICE_ID XPAR_PS7_SCUGIC_0_DEVICE_ID
+#else
+#include "xintc.h"
+#define INTC XIntc
+#define INTC_DEVICE_ID XPAR_INTC_0_DEVICE_ID
+#endif
+
 #include "xil_exception.h"
 
 /**
@@ -21,8 +35,12 @@ typedef struct {
 	void *pvCallbackRef; ///< Interrupt callback
 } ivt_t;
 
-XStatus fnInitInterruptController(XScuGic *psIntc);
-void fnEnableInterrupts(XScuGic *psIntc, const ivt_t *prgsIvt, unsigned int csIVectors);
+XStatus fnInitInterruptController(INTC *psIntc);
+void fnEnableInterrupts(INTC *psIntc, const ivt_t *prgsIvt, unsigned int csIVectors);
 
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* INTC_H_ */

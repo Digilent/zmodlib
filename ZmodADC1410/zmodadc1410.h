@@ -107,7 +107,7 @@ public:
 	void stop();
 
 	uint8_t acquireTriggeredPolling(uint32_t* buffer, uint8_t channel, uint32_t level, uint32_t edge, uint32_t window, size_t length);
-	uint8_t acquireImmediatePolling(uint32_t* buffer, size_t &length);
+	uint8_t acquireImmediatePolling(uint32_t* buffer, uint8_t channel,  size_t &length);
 #ifndef LINUX_APP
 	uint8_t acquireTriggeredInterrupt(uint32_t* buffer, uint8_t channel, uint32_t level, uint32_t edge, uint32_t window, size_t length);
 	uint8_t acquireImmediateInterrupt(uint32_t* buffer, uint8_t channel, size_t length);
