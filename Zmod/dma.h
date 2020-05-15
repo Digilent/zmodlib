@@ -9,6 +9,10 @@
 #ifndef DMA_H_
 #define DMA_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdint.h>
 
 
@@ -27,4 +31,7 @@ uint8_t fnIsDMATransferComplete(uintptr_t addr);
 void* fnAllocBuffer(uintptr_t addr, size_t size);
 void fnFreeBuffer(uintptr_t addr, void *buf, size_t size);
 
+#ifdef __cplusplus
+}
+#endif
 #endif /* DMA_H_ */

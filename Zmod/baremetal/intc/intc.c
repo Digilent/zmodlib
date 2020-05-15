@@ -7,13 +7,9 @@
 
 #ifndef LINUX_APP
 #include "intc.h"
-#include "xparameters.h"
 
-#define INTC_DEVICE_ID XPAR_SCUGIC_0_DEVICE_ID	///< Interrupt controller device ID
-
-
-XScuGic sIntc;	///< Interrupt controller instance
-bool fIntCInit = false; ///< Interrupt controller initialized flag
+INTC Intc;
+bool fIntCInit = false;
 
 /**
  * Initialize an interrupt controller.
@@ -23,29 +19,40 @@ bool fIntCInit = false; ///< Interrupt controller initialized flag
  * @return XST_SUCCESS on success,
  *  XST_FAILURE on failure
  */
-XStatus fnInitInterruptController(XScuGic *psIntc)
+XStatus fnInitInterruptController(INTC *pIntc)
 {
-	XScuGic_Config *psIntcConfig;
 
-	psIntcConfig = XScuGic_LookupConfig(INTC_DEVICE_ID);
-	if (psIntcConfig == NULL)
+	// Init driver instance
+#ifdef PLATFORM_ZYNQ
+	XScuGic_Config *IntcConfig;
+
+	IntcConfig = XScuGic_LookupConfig(INTC_DEVICE_ID);
+	if (IntcConfig == NULL)
 	{
 		return XST_FAILURE;
 	}
-
-	// Init driver instance
-	if (XScuGic_CfgInitialize(psIntc, psIntcConfig,
-			psIntcConfig->CpuBaseAddress) != XST_SUCCESS)
+	if (XScuGic_CfgInitialize(pIntc, IntcConfig,
+				IntcConfig->CpuBaseAddress) != XST_SUCCESS)
 		return XST_FAILURE;
-
-	// Start interrupt controller ????
-
 	Xil_ExceptionInit();
 	// Register the interrupt controller handler with the exception table.
 	// This is in fact the ISR dispatch routine, which calls our ISRs
+
 	Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
 				(Xil_ExceptionHandler)XScuGic_InterruptHandler,
-				psIntc);
+				pIntc);
+#else
+	RETURN_ON_FAILURE(XIntc_Initialize(pIntc, INTC_DEVICE_ID));
+	XIntc_Start(pIntc, XIN_REAL_MODE);
+	Xil_ExceptionInit();
+	// Register the interrupt controller handler with the exception table.
+	// This is in fact the ISR dispatch routine, which calls our ISRs
+
+	Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
+				(Xil_ExceptionHandler)XIntc_InterruptHandler,
+				pIntc);
+#endif
+
 	Xil_ExceptionEnable();
 
 	return XST_SUCCESS;
@@ -59,20 +66,24 @@ XStatus fnInitInterruptController(XScuGic *psIntc)
  *  used to enable and connect the interrupts to their callback functions
  * @param csIVectors the number of interrupts that need to be connected
  */
-void fnEnableInterrupts(XScuGic *psIntc, const ivt_t *prgsIvt, unsigned int csIVectors)
+void fnEnableInterrupts(INTC *pIntc, const ivt_t *prgsIvt, unsigned int csIVectors)
 {
 	unsigned int isIVector;
 
-	Xil_AssertVoid(psIntc != NULL);
-	Xil_AssertVoid(psIntc->IsReady == XIL_COMPONENT_IS_READY);
+	Xil_AssertVoid(pIntc != NULL);
+	Xil_AssertVoid(pIntc->IsReady == XIL_COMPONENT_IS_READY);
 
 	/* Hook up interrupt service routines from IVT */
 	for (isIVector = 0; isIVector < csIVectors; isIVector++)
 	{
-		XScuGic_Connect(psIntc, prgsIvt[isIVector].id, prgsIvt[isIVector].handler, prgsIvt[isIVector].pvCallbackRef);
-
-		/* Enable the interrupt vector at the interrupt controller */
-		XScuGic_Enable(psIntc, prgsIvt[isIVector].id);
+		/* Connect & Enable the interrupt vector at the interrupt controller */
+#ifdef PLATFORM_ZYNQ
+		XScuGic_Connect(pIntc, prgsIvt[isIVector].id, prgsIvt[isIVector].handler, prgsIvt[isIVector].pvCallbackRef);
+		XScuGic_Enable(pIntc, prgsIvt[isIVector].id);
+#else
+		XIntc_Connect(pIntc, prgsIvt[isIVector].id, prgsIvt[isIVector].handler, prgsIvt[isIVector].pvCallbackRef);
+		XIntc_Enable(pIntc, prgsIvt[isIVector].id);
+#endif
 	}
 }
 #endif // LINUX_APP

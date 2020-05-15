@@ -288,9 +288,9 @@ uint8_t ZMODADC1410::acquireTriggeredPolling(uint32_t* buffer, uint8_t channel, 
  *
  * @return 0 on success, any other number on failure
  */
-uint8_t ZMODADC1410::acquireImmediatePolling(uint32_t* buffer, size_t &length)
+uint8_t ZMODADC1410::acquireImmediatePolling(uint32_t* buffer, uint8_t channel, size_t &length)
 {
-	return acquirePolling(buffer, 0, 1, 0, 0, 0, length);
+	return acquirePolling(buffer, channel, 1, 0, 0, 0, length);
 }
 
 #ifndef LINUX_APP
