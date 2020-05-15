@@ -42,7 +42,7 @@ XStatus fnInitInterruptController(INTC *pIntc)
 				(Xil_ExceptionHandler)XScuGic_InterruptHandler,
 				pIntc);
 #else
-	RETURN_ON_FAILURE(XIntc_Initialize(pIntc, INTC_DEVICE_ID));
+	if(XIntc_Initialize(pIntc, INTC_DEVICE_ID)!=XST_SUCCESS)return XST_FAILURE;
 	XIntc_Start(pIntc, XIN_REAL_MODE);
 	Xil_ExceptionInit();
 	// Register the interrupt controller handler with the exception table.
