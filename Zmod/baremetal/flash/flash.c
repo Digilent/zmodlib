@@ -12,9 +12,24 @@
 
 #include "xparameters.h"
 #include "xil_printf.h"
-#include "xiicps.h"
 #include "sleep.h"
 #include "xstatus.h"
+
+#ifdef __MICROBLAZE__
+#include "xiic.h"
+#define Iic_Config XIic_Config
+#define Iic_ConfigTable XIic_ConfigTable
+#define Iic XIic
+#define Iic_CfgInitialize XIic_CfgInitialize
+#define IIC_NUM_INSTANCES XPAR_XIIC_NUM_INSTANCES
+#else
+#include "xiicps.h"
+#define Iic_Config XIicPs_Config
+#define Iic_ConfigTable XIicPs_ConfigTable
+#define Iic XIicPs
+#define Iic_CfgInitialize XIicPs_CfgInitialize
+#define IIC_NUM_INSTANCES XPAR_XIICPS_NUM_INSTANCES
+#endif
 
 #define IIC_SCLK_RATE 		400000 ///< I2C clock rates
 #define FLASH_MAX_LENGTH	256 ///< Maximum flash transfer length
@@ -26,9 +41,9 @@ typedef struct _flash_env {
 	uint16_t slave_addr; ///< Slave address
 } FlashEnv;
 
-extern XIicPs_Config XIicPs_ConfigTable[XPAR_XIICPS_NUM_INSTANCES]; ///< Instances of Iic devices supported
+extern Iic_Config Iic_ConfigTable[IIC_NUM_INSTANCES]; ///< Instances of Iic devices supported
 
-XIicPs XIicPS; ///< Iic device instance
+Iic sIic; ///< Iic device instance
 bool fIicPSInit = false; ///< Iic device instance initialization flag
 
 /**
@@ -38,19 +53,19 @@ bool fIicPSInit = false; ///< Iic device instance initialization flag
  *
  * @return configuration pointer
  */
-XIicPs_Config *XIicPs_LookupConfigBaseAddr(uintptr_t Baseaddr)
+Iic_Config *XIicPs_LookupConfigBaseAddr(uintptr_t Baseaddr)
 {
-	XIicPs_Config *CfgPtr = NULL;
+	Iic_Config *CfgPtr = NULL;
 	s32 Index;
 
-	for (Index = 0; Index < XPAR_XIICPS_NUM_INSTANCES; Index++) {
-		if (XIicPs_ConfigTable[Index].BaseAddress == Baseaddr) {
-			CfgPtr = &XIicPs_ConfigTable[Index];
+	for (Index = 0; Index < IIC_NUM_INSTANCES; Index++) {
+		if (Iic_ConfigTable[Index].BaseAddress == Baseaddr) {
+			CfgPtr = &Iic_ConfigTable[Index];
 			break;
 		}
 	}
 
-	return (XIicPs_Config *)CfgPtr;
+	return (Iic_Config *)CfgPtr;
 }
 
 /**
@@ -63,7 +78,7 @@ XIicPs_Config *XIicPs_LookupConfigBaseAddr(uintptr_t Baseaddr)
  */
 uint32_t fnInitFlash(uintptr_t addr, uint16_t slave_addr)
 {
-	XIicPs_Config *pCfgPtr;
+	Iic_Config *pCfgPtr;
 	int Status;
 
 	FlashEnv *flash_env = (FlashEnv *)malloc(sizeof(FlashEnv));
@@ -85,14 +100,16 @@ uint32_t fnInitFlash(uintptr_t addr, uint16_t slave_addr)
 	}
 
 	//apply configuration to the Iic pointer
-	Status = XIicPs_CfgInitialize(&XIicPS, pCfgPtr, pCfgPtr->BaseAddress);
+	Status = Iic_CfgInitialize(&sIic, pCfgPtr, pCfgPtr->BaseAddress);
 	if (Status != XST_SUCCESS) {
 		xil_printf("Initialization failed %X\n");
 		return -1;
 	}
 
+#ifndef __MICROBLAZE__
 	//set the desired clock rate
-	XIicPs_SetSClk(&XIicPS, IIC_SCLK_RATE);
+	XIicPs_SetSClk(&sIic, IIC_SCLK_RATE);
+#endif
 
 iic_init_done:
 	return (uint32_t)flash_env;
@@ -145,13 +162,18 @@ int fnReadFlash(uintptr_t addr, uint16_t data_addr, uint8_t *read_vals, size_t l
 
 	fnFormatAddr(u8TxData, data_addr);
 
+#ifdef __MICROBLAZE__
+	u8BytesSent = XIic_Send(sIic.BaseAddress, flash_env->slave_addr, u8TxData, 2, XIIC_STOP);
+	u8BytesSent = XIic_Recv(sIic.BaseAddress, flash_env->slave_addr, read_vals, length, XIIC_STOP);
+#else
 	// Send the read address
-	u8BytesSent = XIicPs_MasterSendPolled(&XIicPS, u8TxData, 2, flash_env->slave_addr);
-	while (XIicPs_BusIsBusy(&XIicPS)) {}
+	u8BytesSent = XIicPs_MasterSendPolled(&sIic, u8TxData, 2, flash_env->slave_addr);
+	while (XIicPs_BusIsBusy(&sIic)) {}
 
 	// Receive function form the flash
-	u8BytesSent = XIicPs_MasterRecvPolled(&XIicPS, (uint8_t *)read_vals, length, flash_env->slave_addr);
-	while (XIicPs_BusIsBusy(&XIicPS)) {}
+	u8BytesSent = XIicPs_MasterRecvPolled(&sIic, (uint8_t *)read_vals, length, flash_env->slave_addr);
+	while (XIicPs_BusIsBusy(&sIic)) {}
+#endif
 
 	if (u8BytesSent < 0)
 		return XST_FAILURE;
@@ -185,8 +207,12 @@ int fnWriteFlash(uintptr_t addr, uint16_t data_addr, uint8_t *write_vals, size_t
 	memcpy(u8TxData + 2, (const void *)write_vals, length);
 
 	// Send the data to the flash
-	u8BytesSent = XIicPs_MasterSendPolled(&XIicPS, u8TxData, length + 2, flash_env->slave_addr);
-	while (XIicPs_BusIsBusy(&XIicPS)) {}
+#ifdef __MICROBLAZE__
+	u8BytesSent = XIic_Send(sIic.BaseAddress, flash_env->slave_addr, u8TxData, length+2, XIIC_STOP);
+#else
+	u8BytesSent = XIicPs_MasterSendPolled(&sIic, u8TxData, length + 2, flash_env->slave_addr);
+	while (XIicPs_BusIsBusy(&sIic)) {}
+#endif
 
 	return (int)u8BytesSent;
 }

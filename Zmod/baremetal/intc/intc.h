@@ -9,20 +9,10 @@
 #define INTC_H_
 
 #include "xstatus.h"
-#include "xscugic.h"
 #include "xil_exception.h"
 
-/**
- * Structure for interrupt id, handler and callback reference.
- */
-typedef struct {
-	int id; ///< Interrupt ID
-	XInterruptHandler handler; ///< Interrupt handler
-	void *pvCallbackRef; ///< Interrupt callback
-} ivt_t;
-
-XStatus fnInitInterruptController(XScuGic *psIntc);
-void fnEnableInterrupts(XScuGic *psIntc, const ivt_t *prgsIvt, unsigned int csIVectors);
+XStatus fnInitInterruptController();
+void fnEnableInterrupt(int id, XInterruptHandler callback, void *data);
 
 
 #endif /* INTC_H_ */

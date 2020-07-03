@@ -16,9 +16,6 @@
 #include "../../dma.h"
 #include "../intc/intc.h"
 
-extern XScuGic sIntc;
-extern bool fIntCInit;
-
 #define AXIDMA_REG_ADDR_MM2S_DMACR 		0x00 ///< MM2S DMACR register
 #define AXIDMA_REG_ADDR_MM2S_SA 		0x18 ///< MM2S SA register
 #define AXIDMA_REG_ADDR_MM2S_SA_LENGTH 	0x28 ///< MM2S SA length register
@@ -213,20 +210,13 @@ int fnConfigDma(XAxiDma *AxiDma, uintptr_t dmaBaseAddr) {
 uint32_t fnInitDMA(uintptr_t dmaBaseAddr, enum dma_direction direction,
 		int dma_interrupt_id) {
 	DMAEnv *dmaEnv = (DMAEnv *)malloc(sizeof(DMAEnv));
-	ivt_t ivt[] = {
-		{ dma_interrupt_id, (XInterruptHandler)fnDMAInterruptHandler, dmaEnv },
-	};
-
 	if (!dmaEnv) {
 		xil_printf("Can't allocate DMAEnv for %X\n", dmaBaseAddr);
 		return 0;
 	}
 
 	// Init interrupt controller
-	if (!fIntCInit) {
-		fnInitInterruptController(&sIntc);
-		fIntCInit = true;
-	}
+	fnInitInterruptController();
 
 	dmaEnv->xAxiDma = (XAxiDma *)malloc(sizeof(XAxiDma));
 	if (!dmaEnv->xAxiDma) {
@@ -242,7 +232,7 @@ uint32_t fnInitDMA(uintptr_t dmaBaseAddr, enum dma_direction direction,
 	}
 
 	// Enable all interrupts in the interrupt vector table
-	fnEnableInterrupts(&sIntc, &ivt[0], sizeof(ivt)/sizeof(ivt[0]));
+	fnEnableInterrupt(dma_interrupt_id, (XInterruptHandler)fnDMAInterruptHandler, dmaEnv);
 
 	dmaEnv->direction = direction;
 	if (dmaEnv->direction == DMA_DIRECTION_RX) {

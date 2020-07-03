@@ -12,9 +12,6 @@
 #include "../../reg.h"
 #include "../intc/intc.h"
 
-extern XScuGic sIntc;
-extern bool fIntCInit;
-
 /**
  * Initialize a ZMOD device by initializing its interrupts.
  *
@@ -34,18 +31,11 @@ uint32_t fnInitZmod(uintptr_t addr, int zmodInterrupt,
 {
 	if(zmodInterrupt > 0)
 	{
-		ivt_t ivt[] = {
-			{ zmodInterrupt, (XInterruptHandler)fnZmodInterruptHandler, zmodInterruptData },
-		};
-
 		// Init interrupt controller
-		if (!fIntCInit) {
-			fnInitInterruptController(&sIntc);
-			fIntCInit = true;
-		}
+		fnInitInterruptController();
 
 		// Enable all interrupts in the interrupt vector table
-		fnEnableInterrupts(&sIntc, &ivt[0], sizeof(ivt)/sizeof(ivt[0]));
+		fnEnableInterrupt(zmodInterrupt, (XInterruptHandler)fnZmodInterruptHandler, zmodInterruptData);
 	}
 	return addr;
 }
