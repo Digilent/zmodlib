@@ -83,9 +83,9 @@ class ZMODADC1410: public ZMOD {
 private:
 	uint32_t *interruptBuffer;
 
-	uint8_t acquirePolling(uint32_t* buffer, uint8_t channel, uint8_t mode, uint32_t level, uint32_t edge, uint32_t window, size_t length);
+	uint8_t acquirePolling(uint32_t* buffer, uint8_t channel, uint8_t mode, int16_t level, uint32_t edge, uint32_t window, size_t length);
 #ifndef LINUX_APP
-	uint8_t acquireInterrupt(uint32_t* buffer, uint8_t channel, uint8_t mode, uint32_t level, uint32_t edge, uint32_t window, size_t length);
+	uint8_t acquireInterrupt(uint32_t* buffer, uint8_t channel, uint8_t mode, int16_t level, uint32_t edge, uint32_t window, size_t length);
 #endif //LINUX_APP
 
 protected:
@@ -106,15 +106,15 @@ public:
 	void start();
 	void stop();
 
-	uint8_t acquireTriggeredPolling(uint32_t* buffer, uint8_t channel, uint32_t level, uint32_t edge, uint32_t window, size_t length);
+	uint8_t acquireTriggeredPolling(uint32_t* buffer, uint8_t channel, int16_t level, uint32_t edge, uint32_t window, size_t length);
 	uint8_t acquireImmediatePolling(uint32_t* buffer, size_t &length);
 #ifndef LINUX_APP
-	uint8_t acquireTriggeredInterrupt(uint32_t* buffer, uint8_t channel, uint32_t level, uint32_t edge, uint32_t window, size_t length);
+	uint8_t acquireTriggeredInterrupt(uint32_t* buffer, uint8_t channel, int16_t level, uint32_t edge, uint32_t window, size_t length);
 	uint8_t acquireImmediateInterrupt(uint32_t* buffer, uint8_t channel, size_t length);
 #endif //LINUX_APP
 
 
-	uint8_t autoTestRamp(uint8_t channel, uint32_t level, uint32_t edge, uint32_t window, size_t length);
+	uint8_t autoTestRamp(uint8_t channel, int16_t level, uint32_t edge, uint32_t window, size_t length);
 	void processInterrupt() override;
 
 	void setGain(uint8_t channel, uint8_t gain);

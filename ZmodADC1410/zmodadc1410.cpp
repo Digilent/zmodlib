@@ -162,7 +162,7 @@ int16_t ZMODADC1410::signedChannelData(uint8_t channel, uint32_t data) {
  *
  * @return 0 on success, any other number on failure
  */
-uint8_t ZMODADC1410::acquirePolling(uint32_t* buffer, uint8_t channel, uint8_t mode, uint32_t level,
+uint8_t ZMODADC1410::acquirePolling(uint32_t* buffer, uint8_t channel, uint8_t mode, int16_t level,
 		uint32_t edge, uint32_t window, size_t length)
 {
 	int rc;
@@ -271,7 +271,7 @@ void ZMODADC1410::stop()
  *
  * @return 0 on success, any other number on failure
  */
-uint8_t ZMODADC1410::acquireTriggeredPolling(uint32_t* buffer, uint8_t channel, uint32_t level,
+uint8_t ZMODADC1410::acquireTriggeredPolling(uint32_t* buffer, uint8_t channel, int16_t level,
 		uint32_t edge, uint32_t window, size_t length)
 {
 	return acquirePolling(buffer, channel, 0, level, edge, window, length);
@@ -315,7 +315,7 @@ uint8_t ZMODADC1410::acquireImmediatePolling(uint32_t* buffer, size_t &length)
  *
  * @return 0 on success, any other number on failure
  */
-uint8_t ZMODADC1410::acquireInterrupt(uint32_t* buffer, uint8_t channel, uint8_t mode, uint32_t level,
+uint8_t ZMODADC1410::acquireInterrupt(uint32_t* buffer, uint8_t channel, uint8_t mode, int16_t level,
 		uint32_t edge, uint32_t window, size_t length)
 {
 	interruptBuffer = buffer;
@@ -362,7 +362,7 @@ uint8_t ZMODADC1410::acquireInterrupt(uint32_t* buffer, uint8_t channel, uint8_t
  *
  * @return 0 on success, any other number on failure
  */
-uint8_t ZMODADC1410::acquireTriggeredInterrupt(uint32_t* buffer, uint8_t channel, uint32_t level,
+uint8_t ZMODADC1410::acquireTriggeredInterrupt(uint32_t* buffer, uint8_t channel, int16_t level,
 		uint32_t edge, uint32_t window, size_t length)
 {
 	return acquireInterrupt(buffer, channel, 0, level, edge, window, length);
@@ -460,7 +460,7 @@ int ZMODADC1410::readUserCalib()
  * @param length the number of samples to be acquired
  * @return the status: ERR_SUCCESS for success, ERR_FAIL if the acquired data does not match the expected data.
 */
-uint8_t ZMODADC1410::autoTestRamp(uint8_t channel, uint32_t level, uint32_t edge, uint32_t window, size_t length)
+uint8_t ZMODADC1410::autoTestRamp(uint8_t channel, int16_t level, uint32_t edge, uint32_t window, size_t length)
 {
 	uint32_t *buf;
 	uint8_t status = ERR_SUCCESS;
